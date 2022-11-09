@@ -1,16 +1,18 @@
 import json
-import sys
-
-running = True
+import os
 
 FILE = "data.json"
 
-def loop():
+
+def main():
     """boucle principale du programme"""
 
+    running = True
     while running:
-        command = inputInt("Entrez votre commande ici: ")
+        printHelp()
+        command = inputInt("Entrez votre choix: ")
         if command == 0:
+            running = False
             exit()
         elif command == 1:
             add()
@@ -22,113 +24,130 @@ def loop():
 
 def exit():
     """fonction pour sortir du programme"""
-    sys.exit(0)
+    print("Bye bye !")
+
 
 def add():
     """fonction pour ajouter un nouveau contact"""
-    loop = True
-    while loop:
+
+    while True:
         name = inputStr("Nom (0 pour terminer): ")
         if name == '0':
             break
 
         if exist(name):
-            print("Erreur: ce nom exist deja !")
+            print("Erreur: ce nom est déjà enregistré !")
             continue
 
-        num = inputPhoneNumber("Numero de telephone: ")
+        num = inputPhoneNumber("Numéro de téléphone: ")
         if num is None:
-            print("Erreur: le numero de telephone n'est pas valide !")
+            print("Erreur: le numéro de téléphone n'est pas valide !")
             continue
 
         addContact(name, num)
+        print("Le contact " + name + " a bien été enregistré")
 
-    pass
 
 def get():
-    """fonction pour recuperer  un contact"""
-    loop = True
-    while loop:
+    """fonction pour récuperer  un contact"""
+
+    while True:
         name = inputStr("Nom (0 pour terminer): ")
         if name == '0':
             break
 
         result = getContact(name)
 
-        if result == None:
-            print("Erreur: le nom est introuvable")
+        if result is None:
+            print("Erreur: aucun numéro associé à " + name + " !")
             continue
 
-        print("Le numero de telephone de " + name + " est: " + result)
+        print("Le numéro de téléphone de " + name + " est: " + result)
         return
 
     pass
 
+
 def delete():
-    loop = True
-    while loop:
+    """fonction pour supprimer un contact"""
+
+    while True:
         name = inputStr("Nom (0 pour terminer): ")
         if name == '0':
             break
 
         if not exist(name):
-            print("Erreur: " + name + "n'existe pas !")
+            print("Erreur: " + name + " n'existe pas !")
             continue
 
-        if not consent("Etes-vous sur de vouloir supprimer " + name + " ?", True):
-            print("[End]")
+        if not consent("Etes-vous sûr de vouloir supprimer " + name + " ?", True):
+            print("[ANNULÉ]")
             continue
 
         delContact(name)
-        print(name + " a bien ete supprime")
-
+        print(name + " a bien été supprimé")
 
 
 def exist(name):
-   return index(name) is not None
+    """renvoie True si le contact est déjà enregistré"""
+    return index(name) is not None   # renvoie True si le contact n'est pas None
+
 
 def index(name):
-    content = getFile()
-    for i in content:
-        if i['name'] == name:
+    """
+    renvoie les données du contact\n
+    {'name': '$name', 'number': '$number'}
+    """
+    content = getFile()   # récupere le fichier
+    for i in content:   # pour tout les contacts si le nom (en maj) correcpond au nom demmandé (en maj) renvoyer le contact
+        if i['name'].upper() == name.upper():
             return i
 
-def addContact(name, number):
-    content = getFile()
 
-    content.append({"name": name, "number": number})
-    writeFile(content)
+def addContact(name, number):
+    """ajoute le contact"""
+    content = getFile()   # récupere le contenu du fichier
+
+    content.append({"name": name, "number": number})   # ajoute le nouveau contact (format json)
+    writeFile(content)   # écrit le fichier avec le nouveau contact
+
 
 def getContact(name):
-    i = index(name)
-    if i is not None:
+    """récupere le numéro du contact"""
+    i = index(name)   # récupere le contact
+    if i is not None:   # si le contact exist alors renvoyer le numéro
         return i['number']
 
+
 def delContact(name):
-    i = index(name)
-    if i is None:
+    """supprime le contact"""
+    i = index(name)   # récupere le contact
+    if i is None:   # si le contact n'exist pas sortir de la fonction
         return
 
-    content = getFile()
+    content = getFile()   # récupere l'intégralité des contacts
 
-    content.remove(i)
-    writeFile(content)
+    content.remove(i)   # supprime le contact
+    writeFile(content)   # écrit le fichier sans le contact
+
 
 #                                   #-----****-----#                                   #
 
 def inputInt(*title):
     """fonction qui permet d'input un integer"""
     try:
-        return int(inputValue(title))
-    except ValueError:
+        return int(inputValue(title))   # converti en int la valeur d'entrée
+    except ValueError:   # si la valeur d'entrée n'est pas un int sortir de la fonction
         pass
+
 
 def inputStr(*title):
     """fonction qui permet d'input un string"""
     try:
-        return str(inputValue(title))
-    except ValueError:
+        return str(inputValue(title))   # converti en str la valeur d'entrée
+    except ValueError:   # si la valeur d'entrée n'est pas un int sortir de la fonction
         pass
+
 
 def inputPhoneNumber(*title):
     """fonction qui permet d'input un phone number"""
@@ -148,47 +167,70 @@ def inputPhoneNumber(*title):
 def inputValue(title):
     """fonction qui permet d'input une valeur"""
 
-    while type(title) == tuple:
+    while type(title) == tuple:  # si le paramètre est un tuple en extraire le premier str
         if len(title) != 0:
             title = title[0]
         else:
             title = ""
             break
-    return input(title)
+
+    return input(title)   #input text
+
 
 def getFile():
     """recupere le contenu du fichier"""
-    if empty():
-        clear()
+    if empty():   # si le fichier est vide ou n'exist pas l'initialiser
+        default()
 
     with open(FILE, "r") as f:
-        return json.load(f)
+        return json.load(f)   # renvoie le contenu json du fichier
+
 
 def empty():
+    """renvoit True si le répertoire est vide"""
+    if not os.path.exists(FILE):   # si le fichier n'existe pas le créer et l'initialiser
+        default()
+
     with open(FILE, "r") as f:
-        return len(f.read()) == 0
+        return len(f.read()) == 0   # renvoie True si la taille du contenu du fichier est 0
 
 
-def clear():
+def default():
+    """fonction qui crée le fichier (si il n'existe pas) et l'initialise"""
     with open(FILE, "w") as f:
-        json.dump([], f)
+        json.dump([], f)   # crée un tableau vide dans le fichier json
+
 
 def writeFile(data):
     """ecrit le contenu du fichier"""
     with open(FILE, "w") as f:
-        json.dump(data, f)
+        json.dump(data, f)   # remplace le contenu du fichier par 'data'
+
 
 def consent(title, yes):
+    """renvoie True si l'utilisateur concent à l'action sinon False"""
+
     text = "[oui;NON]"
-    if yes:
-      text = "[OUI;non]"
+    if yes:   # si oui est la réponse par défaut
+        text = "[OUI;non]"
 
-    s = inputStr(title + " " + text)
+    s = inputStr(title + " " + text)   # demande un str a l'utilisateur
 
-    if len(s) == 0:
+    if len(s) == 0:   # si l'entrée est vide alors renvoyer la valeur par défaut
         return yes
 
-    return s.upper() == 'OUI'
+    return s.upper() == 'OUI'   #renvoie True si l'entrée (en maj) est "OUI"
 
 
+def printHelp():
+    """fonction qui affiche les différents choix"""
 
+    print("_________________________________")
+    print("|0-quitter                      |")
+    print("|1-écrire dans le répertoire    |")
+    print("|2-rechercher dans le répertoire|")
+    print("|3-supprimer dans le répertoire |")
+    print("\_______________________________/\n")
+
+
+main()
