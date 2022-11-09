@@ -30,8 +30,7 @@ def add():
     while loop:
         name = inputStr("Nom (0 pour terminer): ")
         if name == '0':
-            loop = False
-            continue
+            break
 
         if exist(name):
             print("Erreur: ce nom exist deja !")
@@ -52,8 +51,7 @@ def get():
     while loop:
         name = inputStr("Nom (0 pour terminer): ")
         if name == '0':
-            loop = False
-            continue
+            break
 
         result = getContact(name)
 
@@ -71,8 +69,7 @@ def delete():
     while loop:
         name = inputStr("Nom (0 pour terminer): ")
         if name == '0':
-            loop = False
-            continue
+            break
 
         if not exist(name):
             print("Erreur: " + name + "n'existe pas !")
@@ -161,8 +158,20 @@ def inputValue(title):
 
 def getFile():
     """recupere le contenu du fichier"""
+    if empty():
+        clear()
+
     with open(FILE, "r") as f:
         return json.load(f)
+
+def empty():
+    with open(FILE, "r") as f:
+        return len(f.read()) == 0
+
+
+def clear():
+    with open(FILE, "w") as f:
+        json.dump([], f)
 
 def writeFile(data):
     """ecrit le contenu du fichier"""
