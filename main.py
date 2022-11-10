@@ -199,12 +199,14 @@ def default():
     """fonction qui crée le fichier (si il n'existe pas) et l'initialise"""
     with open(FILE, "w") as f:
         json.dump([], f)   # crée un tableau vide dans le fichier json
+    f.close()   # ferme le fichier après utilisation
 
 
 def writeFile(data):
     """ecrit le contenu du fichier"""
     with open(FILE, "w") as f:
         json.dump(data, f)   # remplace le contenu du fichier par 'data'
+    f.close()   # ferme le fichier après utilisation
 
 
 def consent(title, yes):
