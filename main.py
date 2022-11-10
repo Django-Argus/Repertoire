@@ -65,8 +65,6 @@ def get():
         print("Le numéro de téléphone de " + name + " est: " + result)
         return
 
-    pass
-
 
 def delete():
     """fonction pour supprimer un contact"""
@@ -85,7 +83,8 @@ def delete():
             continue
 
         delContact(name)
-        print(name + " a bien été supprimé")
+        print(name + " a bien été supprimé(e)")
+        return
 
 
 def exist(name):
