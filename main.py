@@ -1,10 +1,10 @@
 import json
 import os
 
-FILE = "data.json"  # chemin vers le fichier de données
+FILE = "data.txt"  # chemin vers le fichier de données
 
 
-def main():
+def menu():
     """Boucle principale du programme"""
 
     running = True
@@ -15,9 +15,9 @@ def main():
             running = False  # sortir de la boucle
             stop()  # fonction pour sortir du programme
         elif command == 1:  # si le choix est 1 (ajout d'un contact)
-            add()  # fonction pour ajouter un nouveau contact
+            ecriture()  # fonction pour ajouter un nouveau contact
         elif command == 2:  # si le choix est 2 (recherche d'un contact)
-            get()  # fonction pour récupérer un contact
+            lecture()  # fonction pour récupérer un contact
         elif command == 3:  # si le choix est 3 (suppression d'un contact)
             delete()  # fonction pour supprimer un contact
 
@@ -27,7 +27,7 @@ def stop():
     print("Bye bye !")  # affiche le message d'au revoir
 
 
-def add():
+def ecriture():
     """Fonction pour ajouter un nouveau contact"""
 
     while True:
@@ -48,7 +48,7 @@ def add():
         print("Le contact " + name + " a bien été enregistré")  # afficher le message qui valide le contact
 
 
-def get():
+def lecture():
     """Fonction pour récupérer un contact"""
 
     while True:
@@ -142,10 +142,7 @@ def inputInt(*title):
 
 def inputStr(*title):
     """Fonction qui permet d'input un string"""
-    try:
-        return str(inputValue(title))  # converti en str la valeur d'entrée
-    except ValueError:  # si la valeur d'entrée n'est pas un str, sortir de la fonction
-        pass
+    return inputValue(title)  # renvoie la valeur d'entrée
 
 
 def inputPhoneNumber(*title):
@@ -197,7 +194,7 @@ def empty():
 def default():
     """Fonction qui crée le fichier (s'il n'existe pas) et l'initialise"""
     with open(FILE, "w") as f:
-        json.dump([], f)  # crée un tableau vide dans le fichier json
+        json.dump([], f)  # créer un tableau vide dans le fichier json
     f.close()  # ferme le fichier après utilisation
 
 
@@ -234,4 +231,4 @@ def printHelp():
     print("\_______________________________/\n")
 
 
-main()  # lance la fonction principale du programme
+menu()  # lance la fonction principale du programme
